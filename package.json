@@ -28,6 +28,7 @@
     "@types/dat.gui": "^0.7.10",
     "@vitejs/plugin-legacy": "^4.1.1",
     "dat.gui": "^0.7.9",
+    "geotiff": "^2.0.7",
     "three": "^0.157.0"
   },
   "devDependencies": {
