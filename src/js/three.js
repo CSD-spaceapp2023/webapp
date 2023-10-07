@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 import fragment from '../shaders/fragment.glsl';
 import vertex from '../shaders/vertex.glsl';
+import { GUI } from 'dat.gui';
 
 const device = {
   width: window.innerWidth,
@@ -23,7 +24,7 @@ export default class Three {
       0.1,
       100
     );
-    this.camera.position.set(0, 0, 2);
+    this.camera.position.set(0, 0, 0.7);
     this.scene.add(this.camera);
 
     this.renderer = new T.WebGLRenderer({
@@ -39,10 +40,51 @@ export default class Three {
 
     this.clock = new T.Clock();
 
+    this.gui = new GUI();
+
+    this.setup_params();
+    this.renderUI();
+
     this.setLights();
     this.setGeometry();
     this.render();
     this.setResize();
+  }
+
+
+  setup_params() {
+    this.scaleX = 1;
+    this.scaleY = 1;
+    this.scaleZ = 1;
+
+    this.layers = {
+      methane: true,
+      cow: true,
+      someCrop: true,
+    }
+    // this.positionX = 0;
+    // this.positionY = 0;
+    // this.positionZ = 0;
+    // this.rotationX = 0;
+    // this.rotationY = 90;
+    // this.rotationZ = 0;
+    // this.boxColor = color;
+    // this.castShadow = true;
+    // this.boxOpacity = 1;
+  }
+
+  renderUI() {
+    var f1 = this.gui.addFolder('Scale');
+    f1.open();
+    f1.add(this, 'scaleX', 0.1, 5)
+    f1.add(this, 'scaleY', 0.1, 5)
+    f1.add(this, 'scaleZ', 0.1, 5)
+
+    var layersFolder = this.gui.addFolder('Layer');
+    layersFolder.open();
+    layersFolder.add(this.layers, 'methane');
+    layersFolder.add(this.layers, 'cow');
+    layersFolder.add(this.layers, 'someCrop');
   }
 
   setLights() {
@@ -63,14 +105,15 @@ export default class Three {
     });
 
     this.planeMesh = new T.Mesh(this.planeGeometry, this.planeMaterial);
+    this.planeMesh.rotation.x = -80 * Math.PI / 180.0
     this.scene.add(this.planeMesh);
   }
 
   render() {
     const elapsedTime = this.clock.getElapsedTime();
 
-    this.planeMesh.rotation.x = 0.2 * elapsedTime;
-    this.planeMesh.rotation.y = 0.1 * elapsedTime;
+    //this.planeMesh.rotation.x = 0.2 * elapsedTime;
+    //this.planeMesh.rotation.y = 0.1 * elapsedTime;
 
     this.renderer.render(this.scene, this.camera);
     requestAnimationFrame(this.render.bind(this));
