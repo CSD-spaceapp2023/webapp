@@ -40,7 +40,11 @@ export default class Three {
       0.00001,
       100
     );
-    this.camera.position.set(0, 1, 0);
+    // this.camera.position.set(0, 1, 0);
+    this.camera.position.set(0, 0, 1);
+    this.camera.lookAt(0, 0, 0);
+
+
     this.scene.add(this.camera);
 
     this.renderer = new T.WebGLRenderer({
@@ -61,7 +65,7 @@ export default class Three {
 
     this.loadMethaneAssets();
 
-    this.generateTexture();
+    // this.generateTexture();
 
     this.loadAssets();
     this.setup_params();
@@ -128,16 +132,18 @@ export default class Three {
     // });
     this.planeMaterial = new T.MeshBasicMaterial({map: this.earthtex})
     this.planeMesh = new T.Mesh(this.planeGeometry, this.planeMaterial);
-    this.planeMesh.rotation.x = -90 * Math.PI / 180.0
+    // this.planeMesh.rotation.x = -90 * Math.PI / 180.0
     this.scene.add(this.planeMesh);
 
-    this.methaneGeometry = new T.PlaneGeometry(10000, 1.0);
-    this.methaneMaterial = new T.MeshBasicMaterial()
+    this.methaneGeometry = new T.PlaneGeometry(2, 1.0);
+
+    this.methaneTexture = this.generateTexture();
+    this.methaneMaterial = new T.MeshBasicMaterial({map: this.methaneTexture})
     this.methaneMaterial.transparent = true;
     this.methaneMaterial.opacity = 0.5;
     this.methaneMaterial.needsUpdate = true;
     this.methaneMesh = new T.Mesh(this.methaneGeometry, this.methaneMaterial);
-    this.methaneMesh.rotation.x = -90 * Math.PI / 180.0
+    // this.methaneMesh.rotation.x = -90 * Math.PI / 180.0
     this.scene.add(this.methaneMesh)
   }
 
@@ -180,25 +186,26 @@ export default class Three {
   generateTexture() {
     const resolution = 2000;
     const textureScene = new T.Scene();
-    textureScene.background = new T.Color(0x0000FF);
+    // textureScene.background = new T.Color(0x0000FF);
 
-    const renderTarget = new T.WebGLRenderTarget(resolution, resolution);
-    const textureCamera = new T.OrthographicCamera(-2, 2, -1, 1, 0.1, 100000.0);
+    const renderTarget = new T.WebGLRenderTarget(resolution, resolution/2);
+    const textureCamera = new T.OrthographicCamera();
 
-    textureCamera.position.set(0, 0, 10);
+    textureCamera.position.set(0, 0, 1);
     textureCamera.lookAt(0, 0, 0);
 
     // const loader = new THREE.TextureLoader();
     // const texture = await loader.loadAsync("https://threejs.org/examples/textures/uv_grid_opengl.jpg");
-    // const geometry = new T.PlaneGeometry(50, 50);
-    // const material = new T.MeshBasicMaterial();
-    // const plane = new T.Mesh(geometry, material);
-    // textureScene.add(plane);
+    const geometry = new T.PlaneGeometry(0.1, 0.3);
+    const material = new T.MeshBasicMaterial({color: '#FF0000'});
+    const plane = new T.Mesh(geometry, material);
+    textureScene.add(plane);
 
-    // this.renderer.setRenderTarget(renderTarget);
-    // this.renderer.clear();
-    this.renderer.render(textureScene, textureCamera, renderTarget);
-    // this.renderer.setRenderTarget(null);
+    const orig = this.renderer.getRenderTarget();
+    this.renderer.setRenderTarget(renderTarget);
+    this.renderer.render(textureScene, textureCamera);
+    this.renderer.setRenderTarget(orig);
+    this.renderer.clear();
 
     return renderTarget.texture;
   }
